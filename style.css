@@ -106,3 +106,13 @@ body {
 #start:active {
   background: linear-gradient(90deg, rgba(34, 173, 127, 0.5), rgb(62, 167, 202, 0.5));
 }
+
+.score-board {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: #dddcdc;
+}
