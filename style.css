@@ -73,3 +73,7 @@ body {
   border: 1px solid #b1b1b1;
   border-radius: 5px;
 }
+
+#player1 {
+  margin-bottom: 12px;
+}
