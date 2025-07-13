@@ -8,6 +8,15 @@ const GameStart = (function () {
   const playerDisplayName1 = document.querySelector('#p1');
   const playerDisplayName2 = document.querySelector('#p2');
 
+  const playerMarker = {
+    player1: 'X',
+    player2: 'O',
+    status: true,
+    changeStatus() {
+      return this.status = !this.status;
+    }
+  }
+
   startBtn.addEventListener('click', startGame);
 
   function startGame() {
@@ -23,6 +32,23 @@ const GameStart = (function () {
     for (let i = 0; i < 9; i++) {
       const gridTile = document.createElement('div');
       gridTile.classList.add('grid-tile');
+      gridTile.classList.add('grid-text');
+
+      gridTile.addEventListener('click', markTile);
+
+      function markTile() {
+        const status = playerMarker.changeStatus();
+
+        if (!status) {
+          gridTile.textContent = playerMarker.player1;
+          gridTile.style.color = '#830564';
+          gridTile.style.pointerEvents = 'none';
+        } else {
+          gridTile.textContent = playerMarker.player2;
+          gridTile.style.color = '#167004';
+          gridTile.style.pointerEvents = 'none';
+        }
+      }
 
       gameGrid.appendChild(gridTile);
     }

@@ -179,3 +179,11 @@ label {
 .grid-tile:active {
   background-color: #c0bdbd;
 }
+
+.grid-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 900;
+  font-size: 2rem;
+}
