@@ -138,3 +138,8 @@ body {
   justify-content: center;
   gap: 5px;
 }
+
+.bold {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
