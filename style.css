@@ -55,7 +55,7 @@ body {
 }
 
 .game-container h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   padding: 5px;
 }
 
@@ -80,7 +80,7 @@ label {
 }
 
 #player1 {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 #start {
@@ -146,4 +146,31 @@ label {
 .bold {
   font-size: 1.2rem;
   font-weight: 900;
+}
+
+.game-grid {
+  width: 320px;
+  padding: 8px;
+  margin-top: 5px;
+  background-color: #dddcdc;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.grid-tile {
+  height: 45px;
+  background-color: #b1b1b1;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.grid-tile:hover {
+  transform: scale(1.03);
+}
+
+.grid-tile:active {
+  background-color: #c0bdbd;
 }
