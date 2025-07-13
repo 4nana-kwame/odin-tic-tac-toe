@@ -3,3 +3,18 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: Roboto, system-ui, sans-serif;
+  height: 100%;
+  width: 100%;
+  /* Image owner - Marcela Artola */
+  background-image: url('images/bg-image.jpg');
+  background-size: cover;
+  background-repeat: none;
+  background-position: center;
+}
