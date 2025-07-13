@@ -101,3 +101,7 @@ body {
     0 12px 25px rgba(0, 0, 0, 0.3),
     0 18px 50px rgba(0, 0, 0, 0.2);
 }
+
+#start:active {
+  background: linear-gradient(90deg, rgba(34, 173, 127, 0.5), rgb(62, 167, 202, 0.5));
+}
