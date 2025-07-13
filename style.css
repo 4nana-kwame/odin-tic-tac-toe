@@ -77,3 +77,14 @@ body {
 #player1 {
   margin-bottom: 12px;
 }
+
+#start {
+  padding: 12px;
+  font-size: 1rem;
+  width: 150px;
+  border: none;
+  background: linear-gradient(90deg, #22ad7f, #3ea7ca);
+  border-radius: 15px;
+  color: #fff;
+  cursor: pointer;
+}
