@@ -65,3 +65,11 @@ body {
   flex-direction: column;
   gap: 5px;
 }
+
+.game-container input {
+  padding: 8px;
+  font-size: 1rem;
+  color: inherit;
+  border: 1px solid #b1b1b1;
+  border-radius: 5px;
+}
