@@ -79,6 +79,11 @@ label {
   border-radius: 5px;
 }
 
+.game-container input:focus {
+  outline: none;
+  border-color: #22ad7f;
+}
+
 #player1 {
   margin-bottom: 10px;
 }
