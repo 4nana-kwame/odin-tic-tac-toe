@@ -22,6 +22,7 @@ const GameStart = (function () {
   function startGame() {
     gameContainer.innerHTML = '';
     let gameOver = false;
+    let gameResult;
     const resetBtn = document.createElement('button');
     const currentPlayerMove = document.createElement('div');
     currentPlayerMove.textContent = `${player1.value}'s move.`;
@@ -61,6 +62,26 @@ const GameStart = (function () {
           gridTile.style.pointerEvents = 'none';
           currentPlayerMove.textContent = `${player1.value}'s turn.`;
           gameBoard[tileIndex] = playerMarker.player2;
+        }
+
+        for (let i = 0; i < winningCombos.length; i++) {
+          const gridTiles = document.querySelectorAll('.grid-tile');
+
+          let combo = winningCombos[i];
+          const [a, b, c] = combo;
+          
+          if (
+            gameBoard[a] !== null &&
+            gameBoard[a] === gameBoard[b] &&
+            gameBoard[a] === gameBoard[c]
+          ) {
+            console.log(`You've found a winner!`);
+            gameOver = true;
+
+            for (let gridTile of gridTiles) {
+              gridTile.style.pointerEvents = 'none';
+            }
+          }
         }
       }
 
