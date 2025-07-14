@@ -21,6 +21,7 @@ const GameStart = (function () {
 
   function startGame() {
     gameContainer.innerHTML = '';
+    let gameOver = false;
     const resetBtn = document.createElement('button');
     const currentPlayerMove = document.createElement('div');
     currentPlayerMove.textContent = `${player1.value}'s move.`;
@@ -33,10 +34,11 @@ const GameStart = (function () {
       const gridTile = document.createElement('div');
       gridTile.classList.add('grid-tile');
       gridTile.classList.add('grid-text');
+      gridTile.setAttribute('data-index', i);
 
-      gridTile.addEventListener('click', markTile);
+      gridTile.addEventListener('click', markTileAndCheckWinner);
 
-      function markTile() {
+      function markTileAndCheckWinner() {
         const status = playerMarker.changeStatus();
 
         if (!status) {
@@ -50,6 +52,14 @@ const GameStart = (function () {
           gridTile.style.pointerEvents = 'none';
           currentPlayerMove.textContent = `${player1.value}'s turn.`;
         }
+
+        const gridTiles = document.querySelectorAll('.grid-tile');
+        const winningCombos = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
+          [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
+          [0, 4, 8], [2, 4, 6] // diagonals
+        ];
+        const gameBoard = [null, null, null, null, null, null, null, null, null];
       }
 
       gameGrid.appendChild(gridTile);
