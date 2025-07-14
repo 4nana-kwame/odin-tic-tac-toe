@@ -23,7 +23,7 @@ const GameStart = (function () {
     gameContainer.innerHTML = '';
     const resetBtn = document.createElement('button');
     const currentPlayerMove = document.createElement('div');
-    currentPlayerMove.textContent = 'Placeholder';
+    currentPlayerMove.textContent = `${player1.value}'s move.`;
     resetBtn.id = 'start';
     resetBtn.textContent = 'Reset';
     const gameGrid = document.createElement('div');
@@ -43,10 +43,12 @@ const GameStart = (function () {
           gridTile.textContent = playerMarker.player1;
           gridTile.style.color = '#830564';
           gridTile.style.pointerEvents = 'none';
+          currentPlayerMove.textContent = `${player2.value}'s turn.`;
         } else {
           gridTile.textContent = playerMarker.player2;
           gridTile.style.color = '#167004';
           gridTile.style.pointerEvents = 'none';
+          currentPlayerMove.textContent = `${player1.value}'s turn.`;
         }
       }
 
