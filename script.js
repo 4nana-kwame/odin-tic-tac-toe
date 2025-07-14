@@ -83,6 +83,16 @@ const GameStart = (function () {
             }
           }
         }
+
+        function checkNull(isNull) {
+          return isNull !== null;
+        }
+
+        const noNull = gameBoard.every(checkNull);
+
+        if (!gameOver && noNull) {
+          console.log(`It's a tie`);
+        }
       }
 
       gameGrid.appendChild(gridTile);
