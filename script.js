@@ -114,6 +114,18 @@ const GameStart = (function () {
       }
 
       gameGrid.appendChild(gridTile);
+
+      resetBtn.addEventListener('click', clearGridTiles);
+
+      function clearGridTiles() {
+        const gridTiles = document.querySelectorAll('.grid-tile');
+
+        gridTiles.forEach(tile => {
+          tile.style.pointerEvents = 'auto';
+          tile.innerHTML = '';
+          currentPlayerMove.textContent = `${player1.value}' move.`;
+        });
+      }
     }
 
     playerDisplayName1.textContent = player1.value;
