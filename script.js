@@ -7,6 +7,9 @@ const GameStart = (function () {
   const player2 = document.querySelector('#player2');
   const playerDisplayName1 = document.querySelector('#p1');
   const playerDisplayName2 = document.querySelector('#p2');
+  const playerScore1 = document.querySelector('.score1');
+  const playerScore2 = document.querySelector('.score2');
+  const tieScore = document.querySelector('.tie-score');
 
   const playerMarker = {
     player1: 'X',
@@ -23,6 +26,7 @@ const GameStart = (function () {
     gameContainer.innerHTML = '';
     let gameOver = false;
     let gameResult;
+    let scoreCount = 0;
     const resetBtn = document.createElement('button');
     const currentPlayerMove = document.createElement('div');
     currentPlayerMove.textContent = `${player1.value}'s move.`;
@@ -78,9 +82,13 @@ const GameStart = (function () {
             if (gameBoard[a] === playerMarker.player1) {
               gameResult = `${player1.value} wins! 🎉`;
               currentPlayerMove.textContent = gameResult;
+              scoreCount++;
+              playerScore1.textContent = scoreCount;
             } else if (gameBoard[a] === playerMarker.player2) {
               gameResult = `${player2.value} wins! 🎉`;
               currentPlayerMove.textContent = gameResult;
+              scoreCount++;
+              playerScore2.textContent = scoreCount;
             }
 
             gameOver = true;
@@ -100,6 +108,8 @@ const GameStart = (function () {
         if (!gameOver && noNull) {
           gameResult = `It's a tie`;
           currentPlayerMove.textContent = gameResult;
+          scoreCount++;
+          tieScore.textContent = scoreCount;
         }
       }
 
