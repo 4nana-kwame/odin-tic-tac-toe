@@ -20,18 +20,21 @@ const GameStart = (function () {
     }
   }
 
+  let scorePlayer1 = 0;
+  let scorePlayer2 = 0;
+  let scoreTie = 0;
+
   startBtn.addEventListener('click', startGame);
 
   function startGame() {
     gameContainer.innerHTML = '';
     let gameOver = false;
     let gameResult;
-    let scoreCount = 0;
     const resetBtn = document.createElement('button');
     const currentPlayerMove = document.createElement('div');
     currentPlayerMove.textContent = `${player1.value}'s move.`;
     resetBtn.id = 'start';
-    resetBtn.textContent = 'Reset';
+    resetBtn.textContent = 'Play again';
     const gameGrid = document.createElement('div');
     gameGrid.classList.add('game-grid');
 
@@ -39,9 +42,73 @@ const GameStart = (function () {
           [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
           [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
           [0, 4, 8], [2, 4, 6] // diagonals
-        ];
-      const gameBoard = [null, null, null, null, null, null, null, null, null];
+    ];
 
+    const gameBoard = [null, null, null, null, null, null, null, null, null];
+
+    function markTileAndCheckWinner(event) {
+      const gridTile = event.target;
+      const status = playerMarker.changeStatus();
+      const tileIndex = parseInt(gridTile.dataset.index);
+
+      if (!status) {
+        gridTile.textContent = playerMarker.player1;
+        gridTile.style.color = '#830564';
+        gridTile.style.pointerEvents = 'none';
+        currentPlayerMove.textContent = `${player2.value}'s turn.`;
+        gameBoard[tileIndex] = playerMarker.player1;
+      } else {
+        gridTile.textContent = playerMarker.player2;
+        gridTile.style.color = '#167004';
+        gridTile.style.pointerEvents = 'none';
+        currentPlayerMove.textContent = `${player1.value}'s turn.`;
+        gameBoard[tileIndex] = playerMarker.player2;
+      }
+
+      for (let i = 0; i < winningCombos.length; i++) {
+        const gridTiles = document.querySelectorAll('.grid-tile');
+
+        let combo = winningCombos[i];
+        const [a, b, c] = combo;
+          
+        if (
+          gameBoard[a] !== null &&
+          gameBoard[a] === gameBoard[b] &&
+          gameBoard[a] === gameBoard[c]
+        ) {
+          if (gameBoard[a] === playerMarker.player1) {
+            gameResult = `${player1.value} wins! 🎉`;
+            currentPlayerMove.textContent = gameResult;
+            scorePlayer1++;
+            playerScore1.textContent = scorePlayer1;
+          } else if (gameBoard[a] === playerMarker.player2) {
+            gameResult = `${player2.value} wins! 🎉`;
+            currentPlayerMove.textContent = gameResult;
+            scorePlayer2++;
+            playerScore2.textContent = scorePlayer2;
+          }
+
+          gameOver = true;
+
+          for (let gridTile of gridTiles) {
+            gridTile.style.pointerEvents = 'none';
+          }
+        }
+      }
+
+      if (!gameOver) {
+        const boardFull = gameBoard.every(tile => tile !== null);
+          
+        if(boardFull) {
+          gameResult = `It's a tie.`;
+          currentPlayerMove.textContent = gameResult;
+          scoreTie++;
+          tieScore.textContent = scoreTie;
+          gameOver = true;
+        }
+      }
+    }
+      
     for (let i = 0; i < 9; i++) {
       const gridTile = document.createElement('div');
       gridTile.classList.add('grid-tile');
@@ -49,84 +116,28 @@ const GameStart = (function () {
       gridTile.setAttribute('data-index', i);
 
       gridTile.addEventListener('click', markTileAndCheckWinner);
-
-      function markTileAndCheckWinner() {
-        const status = playerMarker.changeStatus();
-        const tileIndex = parseInt(gridTile.dataset.index);
-
-        if (!status) {
-          gridTile.textContent = playerMarker.player1;
-          gridTile.style.color = '#830564';
-          gridTile.style.pointerEvents = 'none';
-          currentPlayerMove.textContent = `${player2.value}'s turn.`;
-          gameBoard[tileIndex] = playerMarker.player1;
-        } else {
-          gridTile.textContent = playerMarker.player2;
-          gridTile.style.color = '#167004';
-          gridTile.style.pointerEvents = 'none';
-          currentPlayerMove.textContent = `${player1.value}'s turn.`;
-          gameBoard[tileIndex] = playerMarker.player2;
-        }
-
-        for (let i = 0; i < winningCombos.length; i++) {
-          const gridTiles = document.querySelectorAll('.grid-tile');
-
-          let combo = winningCombos[i];
-          const [a, b, c] = combo;
-          
-          if (
-            gameBoard[a] !== null &&
-            gameBoard[a] === gameBoard[b] &&
-            gameBoard[a] === gameBoard[c]
-          ) {
-            if (gameBoard[a] === playerMarker.player1) {
-              gameResult = `${player1.value} wins! 🎉`;
-              currentPlayerMove.textContent = gameResult;
-              scoreCount++;
-              playerScore1.textContent = scoreCount;
-            } else if (gameBoard[a] === playerMarker.player2) {
-              gameResult = `${player2.value} wins! 🎉`;
-              currentPlayerMove.textContent = gameResult;
-              scoreCount++;
-              playerScore2.textContent = scoreCount;
-            }
-
-            gameOver = true;
-
-            for (let gridTile of gridTiles) {
-              gridTile.style.pointerEvents = 'none';
-            }
-          }
-        }
-
-        function checkNull(isNull) {
-          return isNull !== null;
-        }
-
-        const noNull = gameBoard.every(checkNull);
-
-        if (!gameOver && noNull) {
-          gameResult = `It's a tie`;
-          currentPlayerMove.textContent = gameResult;
-          scoreCount++;
-          tieScore.textContent = scoreCount;
-        }
-      }
-
       gameGrid.appendChild(gridTile);
-
-      resetBtn.addEventListener('click', clearGridTiles);
-
-      function clearGridTiles() {
-        const gridTiles = document.querySelectorAll('.grid-tile');
-
-        gridTiles.forEach(tile => {
-          tile.style.pointerEvents = 'auto';
-          tile.innerHTML = '';
-          currentPlayerMove.textContent = `${player1.value}' move.`;
-        });
-      }
     }
+
+    function clearGridTiles() {
+      const gridTiles = document.querySelectorAll('.grid-tile');
+
+      gridTiles.forEach(tile => {
+        tile.style.pointerEvents = 'auto';
+        tile.innerHTML = '';
+      });
+
+      currentPlayerMove.textContent = `${player1.value}'s move.`;
+
+      for (let i = 0; i < gameBoard.length; i++) {
+        gameBoard[i] = null;
+      }
+
+      playerMarker['status'] = true;
+      gameOver = false;
+    }
+
+    resetBtn.addEventListener('click', clearGridTiles);
 
     playerDisplayName1.textContent = player1.value;
     playerDisplayName2.textContent = player2.value;
