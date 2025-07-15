@@ -75,7 +75,14 @@ const GameStart = (function () {
             gameBoard[a] === gameBoard[b] &&
             gameBoard[a] === gameBoard[c]
           ) {
-            console.log(`You've found a winner!`);
+            if (gameBoard[a] === playerMarker.player1) {
+              gameResult = `${player1.value} wins! 🎉`;
+              currentPlayerMove.textContent = gameResult;
+            } else if (gameBoard[a] === playerMarker.player2) {
+              gameResult = `${player2.value} wins! 🎉`;
+              currentPlayerMove.textContent = gameResult;
+            }
+
             gameOver = true;
 
             for (let gridTile of gridTiles) {
