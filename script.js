@@ -1,3 +1,4 @@
+// Game board
 const gameBoard = (function () {
   const board = Array(9).fill(null);
 
@@ -23,6 +24,7 @@ const gameBoard = (function () {
   return {setMark, getBoard, resetBoard};
 })();
 
+// Create player for game
 const createPlayer = function (playerName, marker) {
   let score = 0;
 
@@ -36,6 +38,117 @@ const createPlayer = function (playerName, marker) {
 
   return {playerName, marker, getScore, incrementScore};
 }
+
+// Game controller
+const gameController = (function () {
+  const player1 = createPlayer('Player 1', 'X');
+  const player2 = createPlayer('Player 2', 'O');
+
+  let playerTurn = false;
+  let isGameOver = false;
+  let winner;
+
+  function getCurrentPlayer() {
+    return playerTurn ? player1 : player2;
+  }
+
+  function switchCurrentPlayer() {
+    playerTurn = !playerTurn;
+  }
+
+  let tieScore = 0;
+
+  function getTieScore() {
+    return tieScore;
+  }
+
+  function incrementTieScore() {
+    return tieScore++;
+  }
+
+  function playRound(index) {
+    if (isGameOver) return;
+
+    const successful = gameBoard.setMark(index, getCurrentPlayer().marker);
+
+    if (!successful) return;
+
+    const winningCombos = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
+      [0, 4, 8], [2, 4, 6] // diagonals
+    ];
+
+    const board = gameBoard.getBoard();
+
+    for (let i = 0; i < winningCombos.length; i++) {
+      const combo = winningCombos[i];
+      const [a, b, c] = combo;
+
+      if (
+        board[a] !== null &&
+        board[a] === board[b] &&
+        board[a] === board[c]
+      ) {
+        if (board[a] === player1.marker) {
+          player1.incrementScore();
+          winner = `${player1.playerName} wins!`;
+          isGameOver = true;
+        } else if (board[a] === player2.marker) {
+          player2.incrementScore();
+          winner = `${player2.playerName} wins!`;
+          isGameOver = true;
+        }
+      }
+    }
+
+    const fullBoard = board.every(item => item !== null);
+
+      if (fullBoard && !isGameOver) {
+        incrementTieScore();
+        winner = 'Tie';
+        isGameOver = true;
+      }
+
+      if (!isGameOver) {
+        switchCurrentPlayer();
+      }
+  }
+
+  function getIsGameOver() {
+    return isGameOver;
+  }
+
+  function getScores() {
+    return {
+      player1: player1.getScore(),
+      player2: player2.getScore(),
+      tie: getTieScore()
+    };
+  }
+
+  function getWinner() {
+    return winner;
+  }
+
+  function resetGame() {
+    gameBoard.resetBoard();
+
+    winner = null;
+    tieScore = 0;
+    playerTurn = false;
+    isGameOver = false;
+  }
+
+  return {
+    getCurrentPlayer,
+    playRound,
+    getIsGameOver,
+    getScores,
+    getWinner,
+    resetGame
+  };
+})();
 
 // const GameStart = (function () {
 //   const startBtn = document.querySelector('#start');
