@@ -23,6 +23,20 @@ const gameBoard = (function () {
   return {setMark, getBoard, resetBoard};
 })();
 
+const createPlayer = function (playerName, marker) {
+  let score = 0;
+
+  function getScore() {
+    return score;
+  }
+
+  function incrementScore() {
+    return score++;
+  }
+
+  return {playerName, marker, getScore, incrementScore};
+}
+
 // const GameStart = (function () {
 //   const startBtn = document.querySelector('#start');
 //   const heading = document.querySelector('h1');
