@@ -98,7 +98,8 @@ const GameStart = (function () {
         const noNull = gameBoard.every(checkNull);
 
         if (!gameOver && noNull) {
-          console.log(`It's a tie`);
+          gameResult = `It's a tie`;
+          currentPlayerMove.textContent = gameResult;
         }
       }
 
