@@ -49,7 +49,7 @@ const gameController = (function () {
   let winner;
 
   function getCurrentPlayer() {
-    return playerTurn ? player1 : player2;
+    return playerTurn ? player2 : player1;
   }
 
   function switchCurrentPlayer() {
@@ -148,6 +148,46 @@ const gameController = (function () {
     getWinner,
     resetGame
   };
+})();
+
+// Display game in DOM
+const displayController = (function () {
+  const gameContainer = document.querySelector('.game-container');
+  const heading = document.querySelector('h1');
+  const player1Input = document.querySelector('#player1');
+  const player2Input = document.querySelector('#player2');
+  const startBtn = document.querySelector('#start');
+  const scoreBoard = document.querySelector('.score-board');
+
+  startBtn.addEventListener('click', startGame);
+
+  function startGame() {
+    gameContainer.innerHTML = '';
+    gameController.getIsGameOver();
+
+    const resetBtn = document.createElement('button');
+    resetBtn.id = 'start';
+    resetBtn.textContent = 'Play again';
+    const currentPlayer = document.createElement('div');
+    currentPlayer.textContent = `${player1Input.value}'s move`;
+    const gameGrid = document.createElement('div');
+    gameGrid.classList.add('game-grid');
+
+    for (let i = 0; i < 9; i++) {
+      const gridTile = document.createElement('div');
+      gridTile.classList.add('grid-tile');
+      gridTile.classList.add('grid-text');
+      gridTile.setAttribute('data-index', i);
+
+      gameGrid.appendChild(gridTile);
+    }
+
+    gameContainer.appendChild(heading);
+    gameContainer.appendChild(resetBtn);
+    gameContainer.appendChild(scoreBoard);
+    gameContainer.appendChild(currentPlayer);
+    gameContainer.appendChild(gameGrid);
+  }
 })();
 
 // const GameStart = (function () {
