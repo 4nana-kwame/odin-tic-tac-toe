@@ -41,15 +41,20 @@ const createPlayer = function (playerName, marker) {
 
 // Game controller
 const gameController = (function () {
-  const player1 = createPlayer('Player 1', 'X');
-  const player2 = createPlayer('Player 2', 'O');
+  let playerInstance1;
+  let playerInstance2;
+
+  function init(p1, p2) {
+    playerInstance1 = p1;
+    playerInstance2 = p2;
+  }
 
   let playerTurn = false;
   let isGameOver = false;
   let winner;
 
   function getCurrentPlayer() {
-    return playerTurn ? player2 : player1;
+    return playerTurn ? playerInstance2 : playerInstance1;
   }
 
   function switchCurrentPlayer() {
@@ -90,13 +95,13 @@ const gameController = (function () {
         board[a] === board[b] &&
         board[a] === board[c]
       ) {
-        if (board[a] === player1.marker) {
-          player1.incrementScore();
-          winner = `${player1.playerName} wins!`;
+        if (board[a] === playerInstance1.marker) {
+          playerInstance1.incrementScore();
+          winner = `${playerInstance1.playerName} wins! 🎉`;
           isGameOver = true;
-        } else if (board[a] === player2.marker) {
-          player2.incrementScore();
-          winner = `${player2.playerName} wins!`;
+        } else if (board[a] === playerInstance2.marker) {
+          playerInstance2.incrementScore();
+          winner = `${playerInstance2.playerName} wins! 🎉`;
           isGameOver = true;
         }
       }
@@ -106,7 +111,7 @@ const gameController = (function () {
 
       if (fullBoard && !isGameOver) {
         incrementTieScore();
-        winner = 'Tie';
+        winner = 'Tie!';
         isGameOver = true;
       }
 
@@ -121,8 +126,8 @@ const gameController = (function () {
 
   function getScores() {
     return {
-      player1: player1.getScore(),
-      player2: player2.getScore(),
+      player1: playerInstance1.getScore(),
+      player2: playerInstance2.getScore(),
       tie: getTieScore()
     };
   }
@@ -135,12 +140,12 @@ const gameController = (function () {
     gameBoard.resetBoard();
 
     winner = null;
-    tieScore = 0;
     playerTurn = false;
     isGameOver = false;
   }
 
   return {
+    init,
     getCurrentPlayer,
     playRound,
     getIsGameOver,
@@ -152,190 +157,106 @@ const gameController = (function () {
 
 // Display game in DOM
 const displayController = (function () {
+  let player1;
+  let player2;
+
   const gameContainer = document.querySelector('.game-container');
   const heading = document.querySelector('h1');
   const player1Input = document.querySelector('#player1');
   const player2Input = document.querySelector('#player2');
   const startBtn = document.querySelector('#start');
   const scoreBoard = document.querySelector('.score-board');
+  const p1 = document.querySelector('#p1');
+  const p2 = document.querySelector('#p2');
+
+  const resetBtn = document.createElement('button');
+  resetBtn.id = 'start';
+  resetBtn.textContent = 'Play Again';
+  const gameGrid = document.createElement('div');
+  gameGrid.className = 'game-grid';
+  const displayCurrentPlayer = document.createElement('div');
 
   startBtn.addEventListener('click', startGame);
 
   function startGame() {
     gameContainer.innerHTML = '';
-    gameController.getIsGameOver();
 
-    const resetBtn = document.createElement('button');
-    resetBtn.id = 'start';
-    resetBtn.textContent = 'Play again';
-    const currentPlayer = document.createElement('div');
-    currentPlayer.textContent = `${player1Input.value}'s move`;
-    const gameGrid = document.createElement('div');
-    gameGrid.classList.add('game-grid');
+    if (!player1 || !player2) {
+      const player1Value = player1Input.value || 'Player 1';
+      const player2Value = player2Input.value || 'Player 2';
 
-    for (let i = 0; i < 9; i++) {
-      const gridTile = document.createElement('div');
-      gridTile.classList.add('grid-tile');
-      gridTile.classList.add('grid-text');
-      gridTile.setAttribute('data-index', i);
+      player1 = createPlayer(player1Value, 'X');
+      player2 = createPlayer(player2Value, 'O');
 
-      gameGrid.appendChild(gridTile);
+      p1.textContent = player1Value;
+      p2.textContent = player2Value;
     }
 
-    gameContainer.appendChild(heading);
-    gameContainer.appendChild(resetBtn);
-    gameContainer.appendChild(scoreBoard);
-    gameContainer.appendChild(currentPlayer);
-    gameContainer.appendChild(gameGrid);
+    gameController.init(player1, player2);
+
+    displayCurrentPlayer.textContent = `${player1.playerName}'s turn`;
+
+    function getIndexAndPlay(event) {
+      const markTarget = event.target;
+      const target = parseInt(event.target.dataset.index);
+
+      gameController.getCurrentPlayer();
+
+      markTarget.textContent = gameController.getCurrentPlayer().marker;
+      markTarget.style.pointerEvents = 'none';
+
+      if (markTarget.textContent === 'X') {
+        markTarget.style.color = '#830564';
+      } else {
+        markTarget.style.color = '#167004';
+      }
+
+      gameController.playRound(target);
+
+      if (!gameController.getIsGameOver()) {
+        displayCurrentPlayer.textContent = `${gameController.getCurrentPlayer().playerName}'s turn`;
+      } else {
+        displayCurrentPlayer.textContent = gameController.getWinner();
+
+        const tiles = document.querySelectorAll('.grid-tile');
+
+        tiles.forEach(tile => {
+          tile.style.pointerEvents = 'none';
+        });
+      }
+
+      const scores = gameController.getScores();
+      document.querySelector('.score1').textContent = scores.player1;
+      document.querySelector('.score2').textContent = scores.player2;
+      document.querySelector('.tie-score').textContent = scores.tie;
+    }
+
+    for (let i = 0; i < 9; i++) {
+      const tile = document.createElement('div');
+      tile.classList.add('grid-tile', 'grid-text');
+      tile.setAttribute('data-index', i);
+
+      tile.addEventListener('click', getIndexAndPlay);
+
+      gameGrid.appendChild(tile);
+    }
+
+    gameContainer.append(
+      heading,
+      resetBtn,
+      scoreBoard,
+      displayCurrentPlayer,
+      gameGrid
+    );
   }
+
+  function reset() {
+    gameController.resetGame();
+
+    gameGrid.innerHTML = '';
+
+    startGame();
+  }
+
+  resetBtn.addEventListener('click', reset);
 })();
-
-// const GameStart = (function () {
-//   const startBtn = document.querySelector('#start');
-//   const heading = document.querySelector('h1');
-//   const gameContainer = document.querySelector('.game-container');
-//   const scoreBoard = document.querySelector('.score-board');
-//   const player1 = document.querySelector('#player1');
-//   const player2 = document.querySelector('#player2');
-//   const playerDisplayName1 = document.querySelector('#p1');
-//   const playerDisplayName2 = document.querySelector('#p2');
-//   const playerScore1 = document.querySelector('.score1');
-//   const playerScore2 = document.querySelector('.score2');
-//   const tieScore = document.querySelector('.tie-score');
-
-//   const playerMarker = {
-//     player1: 'X',
-//     player2: 'O',
-//     status: true,
-//     changeStatus() {
-//       return this.status = !this.status;
-//     }
-//   }
-
-//   let scorePlayer1 = 0;
-//   let scorePlayer2 = 0;
-//   let scoreTie = 0;
-
-//   startBtn.addEventListener('click', startGame);
-
-//   function startGame() {
-//     gameContainer.innerHTML = '';
-//     let gameOver = false;
-//     let gameResult;
-//     const resetBtn = document.createElement('button');
-//     const currentPlayerMove = document.createElement('div');
-//     currentPlayerMove.textContent = `${player1.value}'s move.`;
-//     resetBtn.id = 'start';
-//     resetBtn.textContent = 'Play again';
-//     const gameGrid = document.createElement('div');
-//     gameGrid.classList.add('game-grid');
-
-//     const winningCombos = [
-//           [0, 1, 2], [3, 4, 5], [6, 7, 8], //rows
-//           [0, 3, 6], [1, 4, 7], [2, 5, 8], //columns
-//           [0, 4, 8], [2, 4, 6] // diagonals
-//     ];
-
-//     function markTileAndCheckWinner(event) {
-//       const gridTile = event.target;
-//       const status = playerMarker.changeStatus();
-//       const tileIndex = parseInt(gridTile.dataset.index);
-
-//       if (!status) {
-//         gridTile.textContent = playerMarker.player1;
-//         gridTile.style.color = '#830564';
-//         gridTile.style.pointerEvents = 'none';
-//         currentPlayerMove.textContent = `${player2.value}'s turn.`;
-//         gameBoard[tileIndex] = playerMarker.player1;
-//       } else {
-//         gridTile.textContent = playerMarker.player2;
-//         gridTile.style.color = '#167004';
-//         gridTile.style.pointerEvents = 'none';
-//         currentPlayerMove.textContent = `${player1.value}'s turn.`;
-//         gameBoard[tileIndex] = playerMarker.player2;
-//       }
-
-//       for (let i = 0; i < winningCombos.length; i++) {
-//         const gridTiles = document.querySelectorAll('.grid-tile');
-
-//         let combo = winningCombos[i];
-//         const [a, b, c] = combo;
-          
-//         if (
-//           gameBoard[a] !== null &&
-//           gameBoard[a] === gameBoard[b] &&
-//           gameBoard[a] === gameBoard[c]
-//         ) {
-//           if (gameBoard[a] === playerMarker.player1) {
-//             gameResult = `${player1.value} wins! 🎉`;
-//             currentPlayerMove.textContent = gameResult;
-//             scorePlayer1++;
-//             playerScore1.textContent = scorePlayer1;
-//           } else if (gameBoard[a] === playerMarker.player2) {
-//             gameResult = `${player2.value} wins! 🎉`;
-//             currentPlayerMove.textContent = gameResult;
-//             scorePlayer2++;
-//             playerScore2.textContent = scorePlayer2;
-//           }
-
-//           gameOver = true;
-
-//           for (let gridTile of gridTiles) {
-//             gridTile.style.pointerEvents = 'none';
-//           }
-//         }
-//       }
-
-//       if (!gameOver) {
-//         const boardFull = gameBoard.every(tile => tile !== null);
-          
-//         if(boardFull) {
-//           gameResult = `It's a tie.`;
-//           currentPlayerMove.textContent = gameResult;
-//           scoreTie++;
-//           tieScore.textContent = scoreTie;
-//           gameOver = true;
-//         }
-//       }
-//     }
-      
-//     for (let i = 0; i < 9; i++) {
-//       const gridTile = document.createElement('div');
-//       gridTile.classList.add('grid-tile');
-//       gridTile.classList.add('grid-text');
-//       gridTile.setAttribute('data-index', i);
-
-//       gridTile.addEventListener('click', markTileAndCheckWinner);
-//       gameGrid.appendChild(gridTile);
-//     }
-
-//     function clearGridTiles() {
-//       const gridTiles = document.querySelectorAll('.grid-tile');
-
-//       gridTiles.forEach(tile => {
-//         tile.style.pointerEvents = 'auto';
-//         tile.innerHTML = '';
-//       });
-
-//       currentPlayerMove.textContent = `${player1.value}'s move.`;
-
-//       for (let i = 0; i < gameBoard.length; i++) {
-//         gameBoard[i] = null;
-//       }
-
-//       playerMarker['status'] = true;
-//       gameOver = false;
-//     }
-
-//     resetBtn.addEventListener('click', clearGridTiles);
-
-//     playerDisplayName1.textContent = player1.value;
-//     playerDisplayName2.textContent = player2.value;
-
-//     gameContainer.appendChild(heading);
-//     gameContainer.appendChild(resetBtn);
-//     gameContainer.appendChild(scoreBoard);
-//     gameContainer.appendChild(currentPlayerMove);
-//     gameContainer.appendChild(gameGrid);
-//   }
-// })();
